@@ -151,7 +151,7 @@ class MomentumDescent(VanillaGradientDescent):
         """
         
         self.h = self.alpha * self.h + self.lr() * gradient
-        self.w = self.w - self.h
+        self.w -= self.h
         return -self.h
 
 
@@ -184,7 +184,7 @@ class Adam(VanillaGradientDescent):
         v_ = self.v / (1 - self.beta_2 ** self.iteration)
         
         delta = self.lr() / (np.sqrt(v_) + self.eps) * m_
-        self.w = self.w - delta
+        self.w -= delta
         return -delta
     
     
@@ -195,7 +195,7 @@ class Adamax(VanillaGradientDescent):
 
         self.m: np.ndarray = np.zeros(dimension)
         self.u: float = 0.
-        self.iteration: int = 0
+        self.iteration: int = 0.
 
         self.beta_1: float = 0.9
         self.beta_2: float = 0.999
@@ -211,7 +211,7 @@ class Adamax(VanillaGradientDescent):
                      np.linalg.norm(gradient, ord=2) ** 2 + self.eps)        
         
         delta = self.lr() * self.m / ( (1 - self.beta_1 ** self.iteration) * self.u )
-        self.w = self.w - delta
+        self.w -= delta
         return -delta
     
 class BaseDescentReg(BaseDescent):
@@ -232,9 +232,8 @@ class BaseDescentReg(BaseDescent):
         """
         Calculate gradient of loss function and L2 regularization with respect to weights
         """
-        # l2_gradient: np.ndarray = np.zeros_like(x.shape[1])  # TODO: replace with L2 gradient calculation
 
-        l2_gradient = self.w
+        l2_gradient = self.w.copy()
         l2_gradient[-1] = 0.
         return super().calc_gradient(x, y) + l2_gradient * self.mu
 
